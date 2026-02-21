@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interaktives Arbeitsblatt: Russische Adjektivendungen</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --success-color: #27ae60;
+            --error-color: #e74c3c;
+            --bg-color: #f4f7f6;
+            --text-color: #333;
+            --card-bg: #ffffff;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            margin: 0;
+            padding: 10px;
+        }
+
+        .container {
+            max-width: 850px;
+            margin: 20px auto;
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: var(--primary-color);
+            text-align: center;
+            border-bottom: 3px solid var(--secondary-color);
+            padding-bottom: 10px;
+        }
+
+        .instruction {
+            background: #eef7fd;
+            padding: 15px;
+            border-left: 5px solid var(--secondary-color);
+            margin-bottom: 30px;
+            border-radius: 4px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+
+        .exercise-row {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+            font-size: 1.1rem;
+        }
+
+        .exercise-row:last-child {
+            border-bottom: none;
+        }
+
+        .num {
+            font-weight: bold;
+            color: var(--secondary-color);
+            width: 30px;
+            flex-shrink: 0;
+        }
+
+        .sentence {
+            flex-grow: 1;
+        }
+
+        select {
+            padding: 6px 10px;
+            margin: 0 5px;
+            border: 2px solid #ccc;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background-color: white;
+            outline: none;
+        }
+
+        /* Feedback-Styles */
+        select.correct {
+            border-color: var(--success-color);
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        select.incorrect {
+            border-color: var(--error-color);
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .controls {
+            margin-top: 30px;
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 12px 24px;
+            font-size: 1rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.1s, opacity 0.2s;
+        }
+
+        .btn-reset {
+            background-color: #95a5a6;
+            color: white;
+        }
+
+        .btn-solution {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 15px;
+            }
+            .exercise-row {
+                font-size: 1rem;
+            }
+            select {
+                margin: 5px 0;
+            }
+            .controls {
+                flex-direction: column;
+            }
+            button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Russische Adjektive im Präpositiv</h1>
+    
+    <div class="instruction">
+        <strong>Anleitung:</strong> Wählen Sie die richtige Endung für das Adjektiv im Präpositiv (Fall 6) aus. 
+        Sobald Sie eine Auswahl treffen, erhalten Sie sofort eine Rückmeldung: 
+        <span style="color: var(--success-color); font-weight: bold;">Grün = Richtig</span>, 
+        <span style="color: var(--error-color); font-weight: bold;">Rot = Falsch</span>.
+    </div>
+
+    <div class="grid" id="exerciseGrid">
+        <!-- Aufgaben 1-20 -->
+        <div class="exercise-row">
+            <span class="num">1.</span>
+            <div class="sentence">В больш<select data-ans="ом"><option value="">?</option><option value="ом">ом</option><option value="ем">ем</option></select> городе.</div>
+        </div>
+
+        <div class="exercise-row">
+            <span class="num">2.</span>
+            <div class="sentence">О хорош<select data-ans="ем"><option value="">?</option><option value="ом">ом</option><option value="ем">ем</option></select> друге.</div>
+        </div>
+
+        <div class="exercise-row">
+            <span class="num">3.</span>
+            <div class="sentence">В син<select data-ans="ей"><option value="">?</option><option value="ой">ой</option><option value="ей">ей</option></select> сумке.</div>
+        </div>
+
+        <div class="exercise-row">
+            <span class="num">4.</span>
+            <div class="sentence">О нов<select data-ans="ом"><option value="">?</option><option value="ом">ом</option><option value="ем">ем</option></select> здании.</div>
+        </div>
+
+        <div class="exercise-row">
+            <span class="num">5.</span>
+            <div class="sentence">В русск<select data-ans="ой"><option value="">?</option><option value="ой">ой</option><option value="ей">ей</option></select> литературе.</div>
+        </div>
+
+        <div class="exercise-row">
+            <span class="num">6.</span>
+            <div class="sentence">Об интересн<select data-ans="ом"><option value="">?</option><option value="ом">ом</option><option value="ем">ем</option></select> фильме.</div>
+        </div>
+
+        <div class="exercise-row">
+            <span class="num">7.</span>
+            <div class="sentence">В соседн<select data-ans="ей"><option value="">?</option><option value="ой">ой</option><option value="ей">ей</option></select> квартире.</div>
+        </div>
+
+        <div class="exercise-row">
+            <span class="num">8.</span>
+            <div class="sentence">О маленьк<select data-ans="ом"><option value="">?</option><option value="ом">ом</option><option value="ем">ем</option></select> задании.</div>
+        </div>
+
+        <div class="exercise-row">
+            <span class="num">9.</span>
+            <div class="sentence">В плох<select data-ans="ом"><option value="">?</option><option value="ом">ом</option><option value="ем">ем</option></select> общежитии.</div>
+        </div>
+
+        <div class="exercise-row">
+            <span class="num">10.</span>
+            <div class="sentence">На Красн<select data-ans="ой"><option value="">?</option><option value="ой">ой</option><option value="ей">ей</option></select> площади.</div>
+        </div>
+
+        <div class="exercise-row">
+            <span class="num">11.</span>
+            <div class="sentence">В англо-русск<select data-ans="ом"><option value="">?</option><option value="ом">ом</option><option value="ем">ем</option></select> словаре.</div>
+        </div>
+
+        <div class="exercise-row">
+            <span class="num">12.</span>
+            <div class="sentence">О летн<select data-ans="ем"><option value="">?</option><option value="ом">ом</option><option value="ем">ем</option></select> отпуске.</div>
+        </div>
+
+        <div class="exercise-row">
+            <span class="num">13.</span>
+            <div class="sentence">В красив<select data-ans="ой"><option value="">?</option><option value="ой">ой</option><option value="ей">ей</option></select> комнате.</div>
+        </div>
+
+        <div class="exercise-row">
+            <span class="num">14.</span>
+            <div class="sentence">Об эт<select data-ans="ом"><option value="">?</option><option value="ом">ом</option><option value="ем">ем</option></select> месте.</div>
+        </div>
+
+        <div class="exercise-row">
+            <span class="num">15.</span>
+            <div class="sentence">О горяч<select data-ans="ем"><option value="">?</option><option value="ом">ом</option><option value="ем">ем</option></select> чае.</div>
+        </div>
+
+        <div class="exercise-row">
+            <span class="num">16.</span>
+            <div class="sentence">В больш<select data-ans="ой"><option value="">?</option><option value="ой">ой</option><option value="ей">ей</option></select> аудитории.</div>
+        </div>
+
+        <div class="exercise-row">
+            <span class="num">17.</span>
+            <div class="sentence">О последн<select data-ans="ем"><option value="">?</option><option value="ом">ом</option><option value="ем">ем</option></select> упражнении.</div>
+        </div>
+
+        <div class="exercise-row">
+            <span class="num">18.</span>
+            <div class="sentence">В современн<select data-ans="ом"><option value="">?</option><option value="ом">ом</option><option value="ем">ем</option></select> музее.</div>
+        </div>
+
+        <div class="exercise-row">
+            <span class="num">19.</span>
+            <div class="sentence">О дорог<select data-ans="ой"><option value="">?</option><option value="ой">ой</option><option value="ей">ей</option></select> машине.</div>
+        </div>
+
+        <div class="exercise-row">
+            <span class="num">20.</span>
+            <div class="sentence">В свеж<select data-ans="ем"><option value="">?</option><option value="ом">ом</option><option value="ем">ем</option></select> воздухе.</div>
+        </div>
+    </div>
+
+    <div class="controls">
+        <button class="btn-reset" onclick="resetAll()">Alle Zurücksetzen</button>
+        <button class="btn-solution" onclick="showAllSolutions()">Lösungen anzeigen</button>
+    </div>
+</div>
+
+<script>
+    const selects = document.querySelectorAll('select');
+
+    // Event Listener für jedes Select-Feld
+    selects.forEach(select => {
+        select.addEventListener('change', function() {
+            validate(this);
+        });
+    });
+
+    function validate(el) {
+        const selectedValue = el.value;
+        const correctAnswer = el.getAttribute('data-ans');
+
+        if (selectedValue === "") {
+            el.className = "";
+        } else if (selectedValue === correctAnswer) {
+            el.className = "correct";
+        } else {
+            el.className = "incorrect";
+        }
+    }
+
+    function resetAll() {
+        selects.forEach(select => {
+            select.value = "";
+            select.className = "";
+        });
+    }
+
+    function showAllSolutions() {
+        selects.forEach(select => {
+            select.value = select.getAttribute('data-ans');
+            select.className = "correct";
+        });
+    }
+</script>
+
+</body>
+</html>
