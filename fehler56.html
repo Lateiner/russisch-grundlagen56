@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fehler-Detektiv: Russische Adjektive</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --success-color: #27ae60;
+            --error-color: #e74c3c;
+            --bg-color: #f4f7f6;
+            --card-bg: #ffffff;
+            --highlight-color: #fff3cd;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: #333;
+            line-height: 1.6;
+            margin: 0;
+            padding: 10px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 20px auto;
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: var(--primary-color);
+            text-align: center;
+            border-bottom: 3px solid var(--secondary-color);
+            padding-bottom: 10px;
+        }
+
+        .instruction {
+            background: #eef7fd;
+            padding: 15px;
+            border-left: 5px solid var(--secondary-color);
+            margin-bottom: 30px;
+            border-radius: 4px;
+        }
+
+        .exercise-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .sentence-row {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+            font-size: 1.15rem;
+        }
+
+        .num {
+            font-weight: bold;
+            color: var(--secondary-color);
+            min-width: 30px;
+        }
+
+        /* Das interaktive Wort */
+        .error-word {
+            background-color: var(--highlight-color);
+            border-bottom: 2px dashed #856404;
+            padding: 2px 6px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .error-word:hover {
+            background-color: #ffeeba;
+        }
+
+        /* Korrektur-Modus */
+        .correct-mode {
+            border: 2px solid var(--success-color) !important;
+            background-color: #d4edda !important;
+            border-bottom: none !important;
+        }
+
+        .wrong-mode {
+            border: 2px solid var(--error-color) !important;
+            background-color: #f8d7da !important;
+            border-bottom: none !important;
+        }
+
+        /* Dropdown Menü */
+        .fix-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            z-index: 10;
+            background: white;
+            border: 1px solid #ccc;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            border-radius: 4px;
+            min-width: 120px;
+        }
+
+        .fix-menu div {
+            padding: 8px 12px;
+            cursor: pointer;
+            border-bottom: 1px solid #eee;
+        }
+
+        .fix-menu div:hover {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        /* Controls */
+        .controls {
+            margin-top: 40px;
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 12px 25px;
+            font-size: 1rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .btn-reset { background-color: #95a5a6; color: white; }
+        .btn-solution { background-color: #f1c40f; color: #2c3e50; }
+
+        @media (max-width: 600px) {
+            .container { padding: 15px; }
+            .sentence-row { font-size: 1rem; }
+            .controls { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Fehler-Detektiv: Präpositiv</h1>
+    
+    <div class="instruction">
+        <strong>Anleitung:</strong> In jedem Satz ist die Adjektivendung falsch. Klicken Sie auf das markierte Wort und wählen Sie die richtige Form aus dem Menü. 
+        <br>Feedback: <span style="color:var(--success-color)">Grün = Korrigiert</span>, <span style="color:var(--error-color)">Rot = Immer noch falsch</span>.
+    </div>
+
+    <div class="exercise-list" id="exerciseList">
+        <!-- 20 Sätze -->
+        <div class="sentence-row">
+            <span class="num">1.</span> Мы живём в <span class="error-word" data-ans="большом" data-opts="большом,большим,большой">большим</span> городе.
+        </div>
+        <div class="sentence-row">
+            <span class="num">2.</span> Она мечтает о <span class="error-word" data-ans="новой" data-opts="новом,новой,новым">новом</span> машине.
+        </div>
+        <div class="sentence-row">
+            <span class="num">3.</span> Мы говорили о <span class="error-word" data-ans="хорошем" data-opts="хорошем,хорошим,хорошая">хорошим</span> друге.
+        </div>
+        <div class="sentence-row">
+            <span class="num">4.</span> Книга лежит в <span class="error-word" data-ans="синей" data-opts="синей,синий,синим">синий</span> сумке.
+        </div>
+        <div class="sentence-row">
+            <span class="num">5.</span> Самолёт в <span class="error-word" data-ans="синем" data-opts="синем,синим,синей">синим</span> небе.
+        </div>
+        <div class="sentence-row">
+            <span class="num">6.</span> Он живёт в <span class="error-word" data-ans="маленьком" data-opts="маленьком,маленьким,маленькой">маленьким</span> доме.
+        </div>
+        <div class="sentence-row">
+            <span class="num">7.</span> Мы живём в <span class="error-word" data-ans="плохом" data-opts="плохом,плохим,плохой">плохим</span> общежитии.
+        </div>
+        <div class="sentence-row">
+            <span class="num">8.</span> Я читаю о <span class="error-word" data-ans="русской" data-opts="русским,русской,русском">русским</span> книге.
+        </div>
+        <div class="sentence-row">
+            <span class="num">9.</span> Вчера мы были на <span class="error-word" data-ans="Красной" data-opts="Красном,Красной,Красная">Красном</span> площади.
+        </div>
+        <div class="sentence-row">
+            <span class="num">10.</span> Костя живёт в <span class="error-word" data-ans="соседней" data-opts="соседней,соседним,соседний">соседним</span> квартире.
+        </div>
+        <div class="sentence-row">
+            <span class="num">11.</span> Мы смотрим об <span class="error-word" data-ans="интересном" data-opts="интересном,интересным,интересной">интересным</span> фильме.
+        </div>
+        <div class="sentence-row">
+            <span class="num">12.</span> Она сидит в <span class="error-word" data-ans="большой" data-opts="большом,большой,большим">большом</span> комнате.
+        </div>
+        <div class="sentence-row">
+            <span class="num">13.</span> Он думает о <span class="error-word" data-ans="летнем" data-opts="летнем,летним,летняя">летним</span> отпуске.
+        </div>
+        <div class="sentence-row">
+            <span class="num">14.</span> Цветы в <span class="error-word" data-ans="красивой" data-opts="красивой,красивым,красивое">красивым</span> вазе.
+        </div>
+        <div class="sentence-row">
+            <span class="num">15.</span> Сахар в <span class="error-word" data-ans="горячем" data-opts="горячем,горячим,горячей">горячим</span> чае.
+        </div>
+        <div class="sentence-row">
+            <span class="num">16.</span> Мы пишем о <span class="error-word" data-ans="последнем" data-opts="последнем,последним,последняя">последним</span> задании.
+        </div>
+        <div class="sentence-row">
+            <span class="num">17.</span> Я читаю в <span class="error-word" data-ans="английской" data-opts="английской,английском,английская">английском</span> книге.
+        </div>
+        <div class="sentence-row">
+            <span class="num">18.</span> Он на <span class="error-word" data-ans="старой" data-opts="старой,старом,старым">старом</span> фотографии.
+        </div>
+        <div class="sentence-row">
+            <span class="num">19.</span> Мы в <span class="error-word" data-ans="современном" data-opts="современном,современным,современной">современным</span> музее.
+        </div>
+        <div class="sentence-row">
+            <span class="num">20.</span> Мы мечтаем о <span class="error-word" data-ans="свежем" data-opts="свежем,свежим,свежая">свежим</span> воздухе.
+        </div>
+    </div>
+
+    <div class="controls">
+        <button class="btn-reset" onclick="resetAll()">Zurücksetzen</button>
+        <button class="btn-solution" onclick="solveAll()">Alle lösen</button>
+    </div>
+</div>
+
+<script>
+    const errorWords = document.querySelectorAll('.error-word');
+
+    errorWords.forEach(word => {
+        word.addEventListener('click', function(e) {
+            e.stopPropagation();
+            closeAllMenus();
+            
+            // Menü erstellen
+            const menu = document.createElement('div');
+            menu.className = 'fix-menu';
+            menu.style.display = 'block';
+            
+            const options = this.getAttribute('data-opts').split(',');
+            options.forEach(opt => {
+                const item = document.createElement('div');
+                item.innerText = opt;
+                item.addEventListener('click', (event) => {
+                    event.stopPropagation();
+                    applyFix(this, opt);
+                    menu.remove();
+                });
+                menu.appendChild(item);
+            });
+            
+            this.appendChild(menu);
+        });
+    });
+
+    function applyFix(element, selectedOption) {
+        const correct = element.getAttribute('data-ans');
+        element.childNodes[0].textContent = selectedOption; // Nur Textknoten ändern
+        
+        if (selectedOption === correct) {
+            element.className = 'error-word correct-mode';
+        } else {
+            element.className = 'error-word wrong-mode';
+        }
+    }
+
+    function closeAllMenus() {
+        document.querySelectorAll('.fix-menu').forEach(m => m.remove());
+    }
+
+    document.addEventListener('click', closeAllMenus);
+
+    function resetAll() {
+        const originalWords = [
+            "большим","новом","хорошим","синий","синим",
+            "маленьким","плохим","русским","Красном","соседним",
+            "интересным","большом","летним","красивым","горячим",
+            "последним","английском","старом","современным","свежим"
+        ];
+        errorWords.forEach((word, i) => {
+            word.childNodes[0].textContent = originalWords[i];
+            word.className = 'error-word';
+        });
+    }
+
+    function solveAll() {
+        errorWords.forEach(word => {
+            const correct = word.getAttribute('data-ans');
+            word.childNodes[0].textContent = correct;
+            word.className = 'error-word correct-mode';
+        });
+    }
+</script>
+
+</body>
+</html>
