@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transformation: Russischer Präpositiv</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --success-color: #27ae60;
+            --error-color: #e74c3c;
+            --bg-color: #f4f7f6;
+            --card-bg: #ffffff;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: #333;
+            margin: 0;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 180px; /* Platz für die Tastatur */
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--primary-color);
+            border-bottom: 3px solid var(--secondary-color);
+            padding-bottom: 10px;
+        }
+
+        .instruction {
+            background: #eef7fd;
+            padding: 15px;
+            border-left: 5px solid var(--secondary-color);
+            margin-bottom: 25px;
+            border-radius: 4px;
+            font-size: 0.95rem;
+        }
+
+        .task-row {
+            display: flex;
+            flex-direction: column;
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            gap: 10px;
+        }
+
+        .nom-phrase {
+            font-weight: bold;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+        }
+
+        .input-area {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            font-size: 1.2rem;
+        }
+
+        .input-slot {
+            min-width: 120px;
+            height: 35px;
+            border: 2px solid #bdc3c7;
+            border-radius: 5px;
+            display: inline-flex;
+            align-items: center;
+            padding: 0 10px;
+            background: #fff;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .input-slot.active {
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+            background: #fdfdfd;
+        }
+
+        .input-slot.correct { border-color: var(--success-color); background-color: #e8f5e9; }
+        .input-slot.incorrect { border-color: var(--error-color); background-color: #ffebee; }
+
+        /* Virtuelle Tastatur */
+        .keyboard {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: #d1d5db;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.2);
+            z-index: 1000;
+        }
+
+        .kb-row {
+            display: flex;
+            justify-content: center;
+            gap: 4px;
+        }
+
+        .key {
+            background: white;
+            border: none;
+            border-radius: 4px;
+            padding: 10px;
+            min-width: 35px;
+            height: 45px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 0 #999;
+            user-select: none;
+        }
+
+        .key:active {
+            transform: translateY(2px);
+            box-shadow: none;
+        }
+
+        .key.special {
+            background: #9ca3af;
+            color: white;
+            padding: 10px 15px;
+        }
+
+        /* Controls */
+        .controls {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        button.main-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .btn-reset { background: #95a5a6; color: white; }
+        .btn-sol { background: #f1c40f; color: #333; }
+
+        @media (max-width: 600px) {
+            .key { min-width: 25px; height: 40px; font-size: 0.9rem; padding: 5px; }
+            .container { margin-bottom: 220px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Transformation: Präpositiv</h1>
+    
+    <div class="instruction">
+        <strong>Anleitung:</strong> Wandle die Phrasen vom Nominativ in den Präpositiv um. 
+        <br>1. Klicke in eine Lücke (blau umrandet). 
+        <br>2. Nutze die Buchstaben-Tastatur unten, um das Wort zu schreiben. 
+        <br>Feedback erfolgt sofort: <span style="color:var(--success-color)">Grün</span> = richtig.
+    </div>
+
+    <div id="exercise-list">
+        <!-- Aufgaben 1-10 -->
+        <div class="task-row">
+            <div class="nom-phrase">синяя сумка</div>
+            <div class="input-area">
+                в <div class="input-slot" id="slot-0-0" onclick="setActive(this)" data-ans="синей"></div> 
+                <div class="input-slot" id="slot-0-1" onclick="setActive(this)" data-ans="сумке"></div>
+            </div>
+        </div>
+
+        <div class="task-row">
+            <div class="nom-phrase">хороший друг</div>
+            <div class="input-area">
+                о <div class="input-slot" id="slot-1-0" onclick="setActive(this)" data-ans="хорошем"></div> 
+                <div class="input-slot" id="slot-1-1" onclick="setActive(this)" data-ans="друге"></div>
+            </div>
+        </div>
+
+        <div class="task-row">
+            <div class="nom-phrase">новое здание</div>
+            <div class="input-area">
+                в <div class="input-slot" id="slot-2-0" onclick="setActive(this)" data-ans="новом"></div> 
+                <div class="input-slot" id="slot-2-1" onclick="setActive(this)" data-ans="здании"></div>
+            </div>
+        </div>
+
+        <div class="task-row">
+            <div class="nom-phrase">большой город</div>
+            <div class="input-area">
+                в <div class="input-slot" id="slot-3-0" onclick="setActive(this)" data-ans="большом"></div> 
+                <div class="input-slot" id="slot-3-1" onclick="setActive(this)" data-ans="городе"></div>
+            </div>
+        </div>
+
+        <div class="task-row">
+            <div class="nom-phrase">русская книга</div>
+            <div class="input-area">
+                о <div class="input-slot" id="slot-4-0" onclick="setActive(this)" data-ans="русской"></div> 
+                <div class="input-slot" id="slot-4-1" onclick="setActive(this)" data-ans="книге"></div>
+            </div>
+        </div>
+
+        <div class="task-row">
+            <div class="nom-phrase">интересный фильм</div>
+            <div class="input-area">
+                об <div class="input-slot" id="slot-5-0" onclick="setActive(this)" data-ans="интересном"></div> 
+                <div class="input-slot" id="slot-5-1" onclick="setActive(this)" data-ans="фильме"></div>
+            </div>
+        </div>
+
+        <div class="task-row">
+            <div class="nom-phrase">маленькое окно</div>
+            <div class="input-area">
+                в <div class="input-slot" id="slot-6-0" onclick="setActive(this)" data-ans="маленьком"></div> 
+                <div class="input-slot" id="slot-6-1" onclick="setActive(this)" data-ans="окне"></div>
+            </div>
+        </div>
+
+        <div class="task-row">
+            <div class="nom-phrase">соседний дом</div>
+            <div class="input-area">
+                в <div class="input-slot" id="slot-7-0" onclick="setActive(this)" data-ans="соседнем"></div> 
+                <div class="input-slot" id="slot-7-1" onclick="setActive(this)" data-ans="доме"></div>
+            </div>
+        </div>
+
+        <div class="task-row">
+            <div class="nom-phrase">красная площадь</div>
+            <div class="input-area">
+                на <div class="input-slot" id="slot-8-0" onclick="setActive(this)" data-ans="красной"></div> 
+                <div class="input-slot" id="slot-8-1" onclick="setActive(this)" data-ans="площади"></div>
+            </div>
+        </div>
+
+        <div class="task-row">
+            <div class="nom-phrase">старая фотография</div>
+            <div class="input-area">
+                на <div class="input-slot" id="slot-9-0" onclick="setActive(this)" data-ans="старой"></div> 
+                <div class="input-slot" id="slot-9-1" onclick="setActive(this)" data-ans="фотографии"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="controls">
+        <button class="main-btn btn-reset" onclick="resetAll()">Alle zurücksetzen</button>
+        <button class="main-btn btn-sol" onclick="showAll()">Lösungen zeigen</button>
+    </div>
+</div>
+
+<!-- Virtuelle Tastatur -->
+<div class="keyboard">
+    <div class="kb-row">
+        <button class="key" onclick="addLetter('й')">й</button>
+        <button class="key" onclick="addLetter('ц')">ц</button>
+        <button class="key" onclick="addLetter('у')">у</button>
+        <button class="key" onclick="addLetter('к')">к</button>
+        <button class="key" onclick="addLetter('е')">е</button>
+        <button class="key" onclick="addLetter('н')">н</button>
+        <button class="key" onclick="addLetter('г')">г</button>
+        <button class="key" onclick="addLetter('ш')">ш</button>
+        <button class="key" onclick="addLetter('щ')">щ</button>
+        <button class="key" onclick="addLetter('з')">з</button>
+        <button class="key" onclick="addLetter('х')">х</button>
+    </div>
+    <div class="kb-row">
+        <button class="key" onclick="addLetter('ф')">ф</button>
+        <button class="key" onclick="addLetter('ы')">ы</button>
+        <button class="key" onclick="addLetter('в')">в</button>
+        <button class="key" onclick="addLetter('а')">а</button>
+        <button class="key" onclick="addLetter('п')">п</button>
+        <button class="key" onclick="addLetter('р')">р</button>
+        <button class="key" onclick="addLetter('о')">о</button>
+        <button class="key" onclick="addLetter('л')">л</button>
+        <button class="key" onclick="addLetter('д')">д</button>
+        <button class="key" onclick="addLetter('ж')">ж</button>
+        <button class="key" onclick="addLetter('э')">э</button>
+    </div>
+    <div class="kb-row">
+        <button class="key" onclick="addLetter('я')">я</button>
+        <button class="key" onclick="addLetter('ч')">ч</button>
+        <button class="key" onclick="addLetter('с')">с</button>
+        <button class="key" onclick="addLetter('м')">м</button>
+        <button class="key" onclick="addLetter('и')">и</button>
+        <button class="key" onclick="addLetter('т')">т</button>
+        <button class="key" onclick="addLetter('ь')">ь</button>
+        <button class="key" onclick="addLetter('б')">б</button>
+        <button class="key" onclick="addLetter('ю')">ю</button>
+        <button class="key special" onclick="backspace()">⌫</button>
+    </div>
+</div>
+
+<script>
+    let activeSlot = null;
+
+    function setActive(el) {
+        if (activeSlot) activeSlot.classList.remove('active');
+        activeSlot = el;
+        activeSlot.classList.add('active');
+    }
+
+    function addLetter(l) {
+        if (!activeSlot) return;
+        activeSlot.innerText += l;
+        checkCurrent();
+    }
+
+    function backspace() {
+        if (!activeSlot) return;
+        activeSlot.innerText = activeSlot.innerText.slice(0, -1);
+        checkCurrent();
+    }
+
+    function checkCurrent() {
+        if (!activeSlot) return;
+        const input = activeSlot.innerText.toLowerCase().trim();
+        const correct = activeSlot.getAttribute('data-ans').toLowerCase();
+        
+        if (input === correct) {
+            activeSlot.classList.add('correct');
+            activeSlot.classList.remove('incorrect');
+        } else if (input.length >= correct.length) {
+            activeSlot.classList.add('incorrect');
+            activeSlot.classList.remove('correct');
+        } else {
+            activeSlot.classList.remove('correct', 'incorrect');
+        }
+    }
+
+    function resetAll() {
+        document.querySelectorAll('.input-slot').forEach(slot => {
+            slot.innerText = '';
+            slot.className = 'input-slot';
+        });
+        activeSlot = null;
+    }
+
+    function showAll() {
+        document.querySelectorAll('.input-slot').forEach(slot => {
+            slot.innerText = slot.getAttribute('data-ans');
+            slot.className = 'input-slot correct';
+        });
+        activeSlot = null;
+    }
+</script>
+
+</body>
+</html>
