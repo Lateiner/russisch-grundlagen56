@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bild-Wort-Zuordnung: Russischer Präpositiv</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --success-color: #27ae60;
+            --error-color: #e74c3c;
+            --bg-color: #f0f2f5;
+            --card-bg: #ffffff;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: #333;
+            line-height: 1.6;
+            margin: 0;
+            padding: 10px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--primary-color);
+            border-bottom: 3px solid var(--secondary-color);
+            padding-bottom: 10px;
+        }
+
+        .instruction {
+            background: #eef7fd;
+            padding: 15px;
+            border-left: 5px solid var(--secondary-color);
+            margin-bottom: 30px;
+            border-radius: 4px;
+        }
+
+        .task-card {
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .visual-context {
+            font-size: 80px;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .question {
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            color: var(--primary-color);
+        }
+
+        /* Satz-Baubereich */
+        .sentence-builder {
+            min-height: 60px;
+            border: 2px dashed #bbb;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            background-color: #fafafa;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+
+        .sentence-builder.correct {
+            border-color: var(--success-color);
+            background-color: #e8f5e9;
+        }
+
+        .sentence-builder.incorrect {
+            border-color: var(--error-color);
+            background-color: #ffebee;
+        }
+
+        .placeholder {
+            color: #aaa;
+            font-style: italic;
+        }
+
+        /* Wort-Bausteine */
+        .word-pool {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .word-btn {
+            background-color: #fff;
+            border: 2px solid var(--secondary-color);
+            color: var(--secondary-color);
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s;
+            user-select: none;
+        }
+
+        .word-btn:hover {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        .word-btn.selected {
+            opacity: 0.3;
+            pointer-events: none;
+        }
+
+        .placed-word {
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        /* Controls */
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .btn-reset, .btn-solution {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1rem;
+        }
+
+        .btn-reset { background-color: #95a5a6; color: white; }
+        .btn-solution { background-color: #f1c40f; color: #333; }
+
+        @media (max-width: 600px) {
+            .container { padding: 15px; }
+            .visual-context { font-size: 60px; }
+            .word-btn { padding: 6px 12px; font-size: 0.9rem; }
+            .controls { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Bild-Wort-Zuordnung</h1>
+    <div class="instruction">
+        <strong>Anleitung:</strong> Schauen Sie sich das Bild und die Frage an. Bauen Sie die Antwort, indem Sie auf die Wort-Bausteine klicken. 
+        Sobald der Satz vollständig ist, erfolgt das Feedback automatisch. Klicken Sie auf ein Wort im Satz, um es zu entfernen.
+    </div>
+
+    <div id="tasks-container">
+        <!-- Aufgaben werden per JS generiert -->
+    </div>
+</div>
+
+<script>
+    const tasks = [
+        {
+            id: 0,
+            image: "🏠🔵", // Blaues Haus
+            question: "Где ты живёшь?",
+            options: ["В", "синем", "доме", "синей", "дому"],
+            answer: ["В", "синем", "доме"]
+        },
+        {
+            id: 1,
+            image: "🎒🔴", // Rote Tasche
+            question: "Где лежит тетрадь?",
+            options: ["В", "красном", "красной", "сумке", "сумку"],
+            answer: ["В", "красной", "сумке"]
+        },
+        {
+            id: 2,
+            image: "🏫🟡", // Gelbes Gebäude
+            question: "Где учатся студенты?",
+            options: ["В", "жёлтом", "здании", "жёлтой", "здание"],
+            answer: ["В", "жёлтом", "здании"]
+        },
+        {
+            id: 3,
+            image: "🌳🟢", // Grüner Park
+            question: "Где гуляют люди?",
+            options: ["В", "зелёном", "парке", "зелёной", "парку"],
+            answer: ["В", "зелёном", "парке"]
+        },
+        {
+            id: 4,
+            image: "🚗⚪", // Weißes Auto
+            question: "Где сидит водитель?",
+            options: ["В", "белом", "белой", "машине", "машину"],
+            answer: ["В", "белой", "машине"]
+        },
+        {
+            id: 5,
+            image: "🏙️🌆", // Große Stadt
+            question: "Где мы сейчас?",
+            options: ["В", "большом", "большой", "городе", "городу"],
+            answer: ["В", "большом", "городе"]
+        },
+        {
+            id: 6,
+            image: "📖🇷🇺", // Russisches Buch
+            question: "Где ты прочитал это?",
+            options: ["В", "русской", "русском", "книге", "книгу"],
+            answer: ["В", "русской", "книге"]
+        },
+        {
+            id: 7,
+            image: "🏢🆕", // Neues Büro/Gebäude
+            question: "Где работает папа?",
+            options: ["В", "новом", "новой", "офисе", "офис"],
+            answer: ["В", "новом", "офисе"]
+        },
+        {
+            id: 8,
+            image: "🌊🌀", // Blaues Meer
+            answer: ["В", "синем", "море"],
+            question: "Где плывёт корабль?",
+            options: ["В", "синем", "море", "синей", "морю"]
+        },
+        {
+            id: 9,
+            image: "🖼️👵", // Altes Foto
+            question: "Где ты видишь дедушку?",
+            options: ["На", "старой", "старом", "фотографии", "фотографию"],
+            answer: ["На", "старой", "фотографии"]
+        }
+    ];
+
+    let userAnswers = tasks.map(() => []);
+
+    function renderTasks() {
+        const container = document.getElementById('tasks-container');
+        container.innerHTML = '';
+
+        tasks.forEach((task, idx) => {
+            const card = document.createElement('div');
+            card.className = 'task-card';
+
+            const visual = document.createElement('span');
+            visual.className = 'visual-context';
+            visual.innerText = task.image;
+
+            const question = document.createElement('div');
+            question.className = 'question';
+            question.innerText = task.question;
+
+            const builder = document.createElement('div');
+            builder.id = `builder-${idx}`;
+            builder.className = 'sentence-builder';
+            updateBuilder(builder, idx);
+
+            const pool = document.createElement('div');
+            pool.className = 'word-pool';
+            task.options.forEach(word => {
+                const btn = document.createElement('button');
+                btn.className = 'word-btn';
+                if (userAnswers[idx].includes(word)) btn.classList.add('selected');
+                btn.innerText = word;
+                btn.onclick = () => addWord(idx, word);
+                pool.appendChild(btn);
+            });
+
+            const controls = document.createElement('div');
+            controls.className = 'controls';
+
+            const resetBtn = document.createElement('button');
+            resetBtn.className = 'btn-reset';
+            resetBtn.innerText = 'Zurücksetzen';
+            resetBtn.onclick = () => resetTask(idx);
+
+            const solutionBtn = document.createElement('button');
+            solutionBtn.className = 'btn-solution';
+            solutionBtn.innerText = 'Lösung';
+            solutionBtn.onclick = () => showSolution(idx);
+
+            controls.appendChild(resetBtn);
+            controls.appendChild(solutionBtn);
+
+            card.appendChild(visual);
+            card.appendChild(question);
+            card.appendChild(builder);
+            card.appendChild(pool);
+            card.appendChild(controls);
+            container.appendChild(card);
+        });
+    }
+
+    function addWord(taskIdx, word) {
+        if (userAnswers[taskIdx].length < tasks[taskIdx].answer.length) {
+            userAnswers[taskIdx].push(word);
+            renderTasks();
+            checkTask(taskIdx);
+        }
+    }
+
+    function removeWord(taskIdx, wordIdx) {
+        userAnswers[taskIdx].splice(wordIdx, 1);
+        renderTasks();
+    }
+
+    function updateBuilder(builderEl, taskIdx) {
+        const currentArr = userAnswers[taskIdx];
+        if (currentArr.length === 0) {
+            builderEl.innerHTML = '<span class="placeholder">Hier klicken zum Bauen...</span>';
+            return;
+        }
+
+        currentArr.forEach((word, wordIdx) => {
+            const span = document.createElement('span');
+            span.className = 'placed-word';
+            span.innerText = word;
+            span.onclick = () => removeWord(taskIdx, wordIdx);
+            builderEl.appendChild(span);
+        });
+    }
+
+    function checkTask(taskIdx) {
+        const builder = document.getElementById(`builder-${taskIdx}`);
+        const userArr = userAnswers[taskIdx];
+        const correctArr = tasks[taskIdx].answer;
+
+        if (userArr.length === correctArr.length) {
+            const isCorrect = JSON.stringify(userArr) === JSON.stringify(correctArr);
+            builder.className = isCorrect ? 'sentence-builder correct' : 'sentence-builder incorrect';
+        }
+    }
+
+    function resetTask(taskIdx) {
+        userAnswers[taskIdx] = [];
+        renderTasks();
+    }
+
+    function showSolution(taskIdx) {
+        userAnswers[taskIdx] = [...tasks[taskIdx].answer];
+        renderTasks();
+        checkTask(taskIdx);
+    }
+
+    window.onload = renderTasks;
+</script>
+
+</body>
+</html>
