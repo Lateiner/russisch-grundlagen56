@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Satzbau-Puzzle: Russische Adjektive</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --success-color: #27ae60;
+            --error-color: #e74c3c;
+            --bg-color: #f4f7f6;
+            --card-bg: #ffffff;
+            --word-bg: #ebf5fb;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: #333;
+            line-height: 1.6;
+            margin: 0;
+            padding: 10px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 20px auto;
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: var(--primary-color);
+            text-align: center;
+            border-bottom: 3px solid var(--secondary-color);
+            padding-bottom: 10px;
+        }
+
+        .instruction {
+            background: #eef7fd;
+            padding: 15px;
+            border-left: 5px solid var(--secondary-color);
+            margin-bottom: 30px;
+            border-radius: 4px;
+        }
+
+        .exercise-block {
+            margin-bottom: 40px;
+            padding: 20px;
+            border: 1px solid #eee;
+            border-radius: 10px;
+            background: #fff;
+        }
+
+        .task-header {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: var(--primary-color);
+        }
+
+        /* Bereich für den fertigen Satz */
+        .sentence-area {
+            min-height: 50px;
+            border: 2px dashed #ccc;
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 15px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            background-color: #fafafa;
+            transition: all 0.3s ease;
+        }
+
+        .sentence-area.correct {
+            border-color: var(--success-color);
+            background-color: #e8f5e9;
+        }
+
+        .sentence-area.incorrect {
+            border-color: var(--error-color);
+            background-color: #ffebee;
+        }
+
+        /* Wort-Pool */
+        .word-pool {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding: 10px;
+        }
+
+        .word {
+            background-color: var(--word-bg);
+            border: 1px solid var(--secondary-color);
+            padding: 8px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            user-select: none;
+            transition: transform 0.1s, background-color 0.2s;
+            font-weight: 500;
+        }
+
+        .word:hover {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        .word.used {
+            opacity: 0.3;
+            cursor: default;
+            pointer-events: none;
+        }
+
+        /* Controls */
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        button {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: opacity 0.2s;
+        }
+
+        .btn-reset { background-color: #95a5a6; color: white; }
+        .btn-solution { background-color: #f1c40f; color: #2c3e50; }
+
+        @media (max-width: 600px) {
+            .container { padding: 15px; }
+            .word { padding: 6px 10px; font-size: 0.9rem; }
+            .controls { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Satzbau-Puzzle: Präpositiv</h1>
+    
+    <div class="instruction">
+        <strong>Anleitung:</strong> Klicken Sie auf die Wörter, um sie in die obere Zeile zu verschieben und einen korrekten Satz zu bilden. 
+        Sobald der Satz vollständig ist, erhalten Sie sofort Feedback (<span style="color:var(--success-color)">grün</span> = richtig, <span style="color:var(--error-color)">rot</span> = falsch). 
+        Klicken Sie auf ein Wort in der oberen Zeile, um es wieder zurückzugeben.
+    </div>
+
+    <div id="puzzles">
+        <!-- Puzzles werden per JS geladen -->
+    </div>
+</div>
+
+<script>
+    const puzzleData = [
+        { correct: ["Мы", "живём", "в", "большом", "городе."], translation: "Wir leben in einer großen Stadt." },
+        { correct: ["Она", "мечтает", "о", "новой", "машине."], translation: "Sie träumt von einem neuen Auto." },
+        { correct: ["Книга", "лежит", "в", "синей", "сумке."], translation: "Das Buch liegt in der blauen Tasche." },
+        { correct: ["Он", "рассказал", "об", "интересном", "фильме."], translation: "Er erzählte von einem interessanten Film." },
+        { correct: ["Вы", "были", "на", "Красной", "площади?"], translation: "Wart ihr auf dem Roten Platz?" },
+        { correct: ["Цветы", "стоят", "в", "красивой", "вазе."], translation: "Die Blumen stehen in einer schönen Vase." },
+        { correct: ["Дети", "играют", "в", "маленьком", "саду."], translation: "Die Kinder spielen im kleinen Garten." },
+        { correct: ["Мы", "говорили", "о", "русской", "литературе."], translation: "Wir sprachen über russische Literatur." },
+        { correct: ["Фотография", "висит", "на", "старой", "стене."], translation: "Das Foto hängt an der alten Wand." },
+        { correct: ["Я", "читаю", "в", "современном", "здании."], translation: "Ich lese im modernen Gebäude." }
+    ];
+
+    function shuffle(array) {
+        let currentIndex = array.length, randomIndex;
+        while (currentIndex != 0) {
+            randomIndex = Math.floor(Math.random() * currentIndex);
+            currentIndex--;
+            [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+        }
+        return array;
+    }
+
+    function initPuzzles() {
+        const container = document.getElementById('puzzles');
+        container.innerHTML = '';
+
+        puzzleData.forEach((data, index) => {
+            const block = document.createElement('div');
+            block.className = 'exercise-block';
+            block.id = `block-${index}`;
+
+            const header = document.createElement('div');
+            header.className = 'task-header';
+            header.innerText = `Satz ${index + 1}: (${data.translation})`;
+
+            const sentenceArea = document.createElement('div');
+            sentenceArea.className = 'sentence-area';
+            sentenceArea.id = `sentence-${index}`;
+
+            const wordPool = document.createElement('div');
+            wordPool.className = 'word-pool';
+            wordPool.id = `pool-${index}`;
+
+            const controls = document.createElement('div');
+            controls.className = 'controls';
+
+            const resetBtn = document.createElement('button');
+            resetBtn.className = 'btn-reset';
+            resetBtn.innerText = 'Zurücksetzen';
+            resetBtn.onclick = () => resetPuzzle(index);
+
+            const solutionBtn = document.createElement('button');
+            solutionBtn.className = 'btn-solution';
+            solutionBtn.innerText = 'Lösung';
+            solutionBtn.onclick = () => showSolution(index);
+
+            controls.appendChild(resetBtn);
+            controls.appendChild(solutionBtn);
+
+            block.appendChild(header);
+            block.appendChild(sentenceArea);
+            block.appendChild(wordPool);
+            block.appendChild(controls);
+            container.appendChild(block);
+
+            // Wörter mischen und laden
+            const words = shuffle([...data.correct]);
+            words.forEach(wordStr => {
+                const wEl = document.createElement('span');
+                wEl.className = 'word';
+                wEl.innerText = wordStr;
+                wEl.onclick = () => moveToSentence(wEl, index);
+                wordPool.appendChild(wEl);
+            });
+        });
+    }
+
+    function moveToSentence(wordEl, puzzleIdx) {
+        const sentenceArea = document.getElementById(`sentence-${puzzleIdx}`);
+        const pool = document.getElementById(`pool-${puzzleIdx}`);
+        
+        // Kopie erstellen für den Satzbereich
+        const newWord = document.createElement('span');
+        newWord.className = 'word';
+        newWord.innerText = wordEl.innerText;
+        newWord.onclick = () => {
+            newWord.remove();
+            wordEl.classList.remove('used');
+            checkSentence(puzzleIdx);
+        };
+
+        sentenceArea.appendChild(newWord);
+        wordEl.classList.add('used');
+        checkSentence(puzzleIdx);
+    }
+
+    function checkSentence(puzzleIdx) {
+        const sentenceArea = document.getElementById(`sentence-${puzzleIdx}`);
+        const pool = document.getElementById(`pool-${puzzleIdx}`);
+        const currentWords = Array.from(sentenceArea.children).map(w => w.innerText);
+        const correctWords = puzzleData[puzzleIdx].correct;
+
+        // Reset Status
+        sentenceArea.classList.remove('correct', 'incorrect');
+
+        if (currentWords.length === correctWords.length) {
+            if (JSON.stringify(currentWords) === JSON.stringify(correctWords)) {
+                sentenceArea.classList.add('correct');
+            } else {
+                sentenceArea.classList.add('incorrect');
+            }
+        }
+    }
+
+    function resetPuzzle(puzzleIdx) {
+        const sentenceArea = document.getElementById(`sentence-${puzzleIdx}`);
+        const pool = document.getElementById(`pool-${puzzleIdx}`);
+        sentenceArea.innerHTML = '';
+        sentenceArea.classList.remove('correct', 'incorrect');
+        Array.from(pool.children).forEach(w => w.classList.remove('used'));
+    }
+
+    function showSolution(puzzleIdx) {
+        resetPuzzle(puzzleIdx);
+        const sentenceArea = document.getElementById(`sentence-${puzzleIdx}`);
+        const pool = document.getElementById(`pool-${puzzleIdx}`);
+        const correct = puzzleData[puzzleIdx].correct;
+
+        correct.forEach(wordStr => {
+            const newWord = document.createElement('span');
+            newWord.className = 'word';
+            newWord.innerText = wordStr;
+            newWord.onclick = () => {
+                newWord.remove();
+                // Word im Pool finden und reaktivieren (vereinfacht beim Reset)
+                checkSentence(puzzleIdx);
+            };
+            sentenceArea.appendChild(newWord);
+        });
+
+        // Alle Wörter im Pool auf 'used' setzen
+        Array.from(pool.children).forEach(w => w.classList.add('used'));
+        sentenceArea.classList.add('correct');
+    }
+
+    window.onload = initPuzzles;
+</script>
+
+</body>
+</html>
