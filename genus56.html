@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Genus-Check: Russische Adjektive im Präpositiv</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --success-color: #27ae60;
+            --error-color: #e74c3c;
+            --bg-color: #f4f7f6;
+            --card-bg: #ffffff;
+            --text-color: #333;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            margin: 0;
+            padding: 10px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 20px auto;
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--primary-color);
+            border-bottom: 3px solid var(--secondary-color);
+            padding-bottom: 10px;
+        }
+
+        .instruction {
+            background: #eef7fd;
+            padding: 15px;
+            border-left: 5px solid var(--secondary-color);
+            margin-bottom: 30px;
+            border-radius: 4px;
+        }
+
+        .task-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .task-row {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .sentence {
+            font-size: 1.15rem;
+            font-weight: 500;
+        }
+
+        .gender-hint {
+            font-size: 0.85rem;
+            color: #7f8c8d;
+            font-style: italic;
+            margin-left: 5px;
+        }
+
+        .options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .option-btn {
+            background-color: #fff;
+            border: 2px solid var(--secondary-color);
+            color: var(--secondary-color);
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s ease;
+            font-size: 1rem;
+        }
+
+        .option-btn:hover {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        /* Feedback-Farben */
+        .option-btn.correct {
+            background-color: var(--success-color) !important;
+            border-color: var(--success-color) !important;
+            color: white !important;
+        }
+
+        .option-btn.incorrect {
+            background-color: var(--error-color) !important;
+            border-color: var(--error-color) !important;
+            color: white !important;
+        }
+
+        .controls {
+            margin-top: 40px;
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        button.main-action {
+            padding: 12px 25px;
+            font-size: 1rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .btn-reset { background-color: #95a5a6; color: white; }
+        .btn-solution { background-color: #f1c40f; color: #2c3e50; }
+
+        @media (max-width: 600px) {
+            .container { padding: 15px; }
+            .sentence { font-size: 1rem; }
+            .option-btn { width: 100%; text-align: center; }
+            .controls { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Multiple Choice: Genus-Check</h1>
+    
+    <div class="instruction">
+        <strong>Anleitung:</strong> Wählen Sie das Adjektiv mit der korrekten Endung für das jeweilige Nomen aus. Achten Sie auf das Geschlecht (Genus) des Wortes.
+        <br>Feedback erfolgt sofort: <span style="color:var(--success-color); font-weight:bold;">Grün = Richtig</span>, <span style="color:var(--error-color); font-weight:bold;">Rot = Falsch</span>.
+    </div>
+
+    <div class="task-grid" id="taskGrid">
+        <!-- Aufgaben 1-20 werden per JS geladen -->
+    </div>
+
+    <div class="controls">
+        <button class="main-action btn-reset" onclick="resetTasks()">Alle zurücksetzen</button>
+        <button class="main-action btn-solution" onclick="showSolutions()">Lösungen anzeigen</button>
+    </div>
+</div>
+
+<script>
+    const tasks = [
+        { sentence: "в ... городе", hint: "Maskulinum", options: ["большом", "большой"], correct: "большом" },
+        { sentence: "о ... площади", hint: "Femininum", options: ["Красном", "Красной"], correct: "Красной" },
+        { sentence: "в ... здании", hint: "Neutrum", options: ["новом", "новой"], correct: "новом" },
+        { sentence: "о ... друге", hint: "Maskulinum", options: ["хорошем", "хорошей"], correct: "хорошем" },
+        { sentence: "в ... сумке", hint: "Femininum", options: ["синем", "синей"], correct: "синей" },
+        { sentence: "об ... упражнении", hint: "Neutrum", options: ["интересном", "интересной"], correct: "интересном" },
+        { sentence: "в ... общежитии", hint: "Neutrum", options: ["плохом", "плохой"], correct: "плохом" },
+        { sentence: "о ... книге", hint: "Femininum", options: ["русском", "русской"], correct: "русской" },
+        { sentence: "в ... лесу", hint: "Maskulinum", options: ["зимнем", "зимней"], correct: "зимнем" },
+        { sentence: "на ... фотографии", hint: "Femininum", options: ["старом", "старой"], correct: "старой" },
+        { sentence: "в ... музее", hint: "Maskulinum", options: ["современном", "современной"], correct: "современном" },
+        { sentence: "о ... истории", hint: "Femininum", options: ["маленьком", "маленькой"], correct: "маленькой" },
+        { sentence: "в ... саду", hint: "Maskulinum", options: ["зелёном", "зелёной"], correct: "зелёном" },
+        { sentence: "о ... задании", hint: "Neutrum", options: ["последнем", "последней"], correct: "последнем" },
+        { sentence: "на ... столе", hint: "Maskulinum", options: ["письменном", "письменной"], correct: "письменном" },
+        { sentence: "в ... квартире", hint: "Femininum", options: ["соседнем", "соседней"], correct: "соседней" },
+        { sentence: "об ... отпуске", hint: "Maskulinum", options: ["летнем", "летней"], correct: "летнем" },
+        { sentence: "о ... погоде", hint: "Femininum", options: ["плохом", "плохой"], correct: "плохой" },
+        { sentence: "в ... небе", hint: "Neutrum", options: ["синем", "синей"], correct: "синем" },
+        { sentence: "об ... окне", hint: "Neutrum", options: ["грязном", "грязной"], correct: "грязном" }
+    ];
+
+    function initTasks() {
+        const grid = document.getElementById('taskGrid');
+        grid.innerHTML = '';
+
+        tasks.forEach((task, idx) => {
+            const row = document.createElement('div');
+            row.className = 'task-row';
+            row.id = `task-${idx}`;
+
+            const sentenceDiv = document.createElement('div');
+            sentenceDiv.className = 'sentence';
+            sentenceDiv.innerHTML = `${idx + 1}. ${task.sentence} <span class="gender-hint">(${task.hint})</span>`;
+
+            const optionsDiv = document.createElement('div');
+            optionsDiv.className = 'options';
+
+            task.options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = opt;
+                btn.onclick = () => checkChoice(btn, opt, task.correct, idx);
+                optionsDiv.appendChild(btn);
+            });
+
+            row.appendChild(sentenceDiv);
+            row.appendChild(optionsDiv);
+            grid.appendChild(row);
+        });
+    }
+
+    function checkChoice(btn, choice, correct, taskIdx) {
+        // Zuerst alle Buttons in dieser Reihe zurücksetzen
+        const row = document.getElementById(`task-${taskIdx}`);
+        const buttons = row.querySelectorAll('.option-btn');
+        buttons.forEach(b => b.className = 'option-btn');
+
+        if (choice === correct) {
+            btn.classList.add('correct');
+        } else {
+            btn.classList.add('incorrect');
+        }
+    }
+
+    function resetTasks() {
+        initTasks();
+    }
+
+    function showSolutions() {
+        tasks.forEach((task, idx) => {
+            const row = document.getElementById(`task-${idx}`);
+            const buttons = row.querySelectorAll('.option-btn');
+            buttons.forEach(btn => {
+                if (btn.innerText === task.correct) {
+                    btn.classList.add('correct');
+                } else {
+                    btn.classList.remove('incorrect');
+                    btn.classList.remove('correct');
+                }
+            });
+        });
+    }
+
+    // Initialisierung beim Laden
+    window.onload = initTasks;
+</script>
+
+</body>
+</html>
