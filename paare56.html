@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matching: Russische Adjektive (Fall 6)</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --success-color: #27ae60;
+            --error-color: #e74c3c;
+            --bg-color: #f4f7f6;
+            --card-bg: #ffffff;
+            --text-color: #333;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            margin: 0;
+            padding: 10px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 20px auto;
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: var(--primary-color);
+            text-align: center;
+            border-bottom: 3px solid var(--secondary-color);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        .instruction {
+            background: #eef7fd;
+            padding: 15px;
+            border-left: 5px solid var(--secondary-color);
+            margin-bottom: 25px;
+            border-radius: 4px;
+        }
+
+        .game-board {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 12px;
+            margin-bottom: 30px;
+            min-height: 350px; /* Verhindert Springen des Layouts */
+        }
+
+        .card {
+            background: #fff;
+            border: 2px solid var(--secondary-color);
+            border-radius: 8px;
+            padding: 15px 10px;
+            text-align: center;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 70px;
+            user-select: none;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .card:hover {
+            background-color: #f0f8ff;
+            transform: translateY(-2px);
+        }
+
+        /* Status: Ausgewählt */
+        .selected {
+            background-color: var(--secondary-color) !important;
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        /* Status: Verschwinden bei Erfolg */
+        .matched {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transform: scale(0.8);
+        }
+
+        /* Status: Fehler */
+        .wrong {
+            background-color: var(--error-color) !important;
+            color: white;
+            border-color: #c0392b;
+        }
+
+        /* Status: Lösungsanzeige (wieder eingeblendet) */
+        .solution-active {
+            opacity: 1 !important;
+            visibility: visible !important;
+            color: white !important;
+            cursor: default !important;
+            border-color: rgba(0,0,0,0.2) !important;
+            transform: none !important;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 12px 25px;
+            font-size: 1rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .btn-reset { background-color: #95a5a6; color: white; }
+        .btn-solution { background-color: #f1c40f; color: #2c3e50; }
+
+        button:hover { opacity: 0.9; }
+
+        .stats {
+            text-align: center;
+            margin-top: 15px;
+            font-weight: bold;
+            color: var(--primary-color);
+            font-size: 1.1em;
+        }
+
+        @media (max-width: 480px) {
+            .game-board { grid-template-columns: 1fr 1fr; }
+            .card { font-size: 0.9rem; min-height: 60px; }
+            .controls { flex-direction: column; }
+            button { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Matching: Russische Adjektive</h1>
+    
+    <div class="instruction">
+        <strong>Anleitung:</strong> Finden Sie die Paare (Nominativ & Präpositiv). 
+        Korrekt gefundene Paare <strong>verschwinden</strong> vom Spielfeld. 
+        Nutzen Sie „Lösung anzeigen“, um alle Paare wieder einzublenden und farblich sortiert zu sehen.
+    </div>
+
+    <div class="game-board" id="gameBoard"></div>
+
+    <div class="stats" id="stats">Verbleibende Paare: 10</div>
+
+    <div class="controls">
+        <button class="btn-reset" onclick="initGame()">Neu mischen & Start</button>
+        <button class="btn-solution" onclick="showAllSolutions()">Lösung anzeigen</button>
+    </div>
+</div>
+
+<script>
+    const pairs = [
+        { nom: "синяя сумка", prep: "в синей сумке" },
+        { nom: "большой город", prep: "в большом городе" },
+        { nom: "хороший друг", prep: "о хорошем друге" },
+        { nom: "новое здание", prep: "в новом здании" },
+        { nom: "интересный фильм", prep: "об интересном фильме" },
+        { nom: "русская книга", prep: "в русской книге" },
+        { nom: "соседняя квартира", prep: "в соседней квартире" },
+        { nom: "маленькая история", prep: "о маленькой истории" },
+        { nom: "летнее небо", prep: "в летнем небе" },
+        { nom: "красная площадь", prep: "на красной площади" }
+    ];
+
+    const pairColors = [
+        "#2980b9", "#27ae60", "#8e44ad", "#d35400", "#c0392b", 
+        "#16a085", "#2c3e50", "#f39c12", "#e67e22", "#2ecc71"
+    ];
+
+    let firstCard = null;
+    let pairsLeft = 10;
+    let lockBoard = false;
+
+    function shuffle(array) {
+        return array.sort(() => Math.random() - 0.5);
+    }
+
+    function initGame() {
+        const board = document.getElementById('gameBoard');
+        board.innerHTML = '';
+        pairsLeft = pairs.length;
+        firstCard = null;
+        lockBoard = false;
+        updateStats();
+
+        let cardsData = [];
+        pairs.forEach((pair, index) => {
+            cardsData.push({ text: pair.nom, pairId: index });
+            cardsData.push({ text: pair.prep, pairId: index });
+        });
+
+        shuffle(cardsData);
+
+        cardsData.forEach(data => {
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.innerText = data.text;
+            card.dataset.pairId = data.pairId;
+            card.addEventListener('click', handleCardClick);
+            board.appendChild(card);
+        });
+    }
+
+    function handleCardClick() {
+        if (lockBoard || this.classList.contains('matched') || this.classList.contains('solution-active')) return;
+        if (this === firstCard) return;
+
+        this.classList.add('selected');
+
+        if (!firstCard) {
+            firstCard = this;
+        } else {
+            checkMatch(this);
+        }
+    }
+
+    function checkMatch(secondCard) {
+        lockBoard = true;
+        const isMatch = firstCard.dataset.pairId === secondCard.dataset.pairId;
+
+        if (isMatch) {
+            // Karten verschwinden lassen
+            const card1 = firstCard;
+            const card2 = secondCard;
+            setTimeout(() => {
+                card1.classList.replace('selected', 'matched');
+                card2.classList.replace('selected', 'matched');
+                pairsLeft--;
+                updateStats();
+                lockBoard = false;
+                if (pairsLeft === 0) {
+                    alert('Glückwunsch! Alle Paare wurden gefunden.');
+                }
+            }, 300);
+            firstCard = null;
+        } else {
+            // Fehler anzeigen
+            firstCard.classList.add('wrong');
+            secondCard.classList.add('wrong');
+            setTimeout(() => {
+                firstCard.classList.remove('selected', 'wrong');
+                secondCard.classList.remove('selected', 'wrong');
+                firstCard = null;
+                lockBoard = false;
+            }, 800);
+        }
+    }
+
+    function updateStats() {
+        document.getElementById('stats').innerText = `Verbleibende Paare: ${pairsLeft}`;
+    }
+
+    function showAllSolutions() {
+        const cards = document.querySelectorAll('.card');
+        lockBoard = true;
+        pairsLeft = 0;
+        updateStats();
+
+        cards.forEach(card => {
+            const pId = parseInt(card.dataset.pairId);
+            const color = pairColors[pId];
+            
+            // Alles wieder sichtbar machen und einfärben
+            card.classList.remove('matched', 'selected', 'wrong');
+            card.classList.add('solution-active');
+            card.style.backgroundColor = color;
+            card.style.opacity = "1";
+            card.style.visibility = "visible";
+        });
+    }
+
+    window.onload = initGame;
+</script>
+
+</body>
+</html>
